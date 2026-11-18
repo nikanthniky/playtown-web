@@ -1,7 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  trailingSlash: true,
+  async redirects() {
+    return [
+      { source: "/products", destination: "/platform/", permanent: true },
+      { source: "/products/playtown", destination: "/", permanent: true },
+      { source: "/playtown", destination: "/", permanent: true },
+      { source: "/privacy-policy", destination: "/privacy/", permanent: true },
+      {
+        source: "/terms-and-conditions",
+        destination: "/terms/",
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     agentFeedback: true,
   },
