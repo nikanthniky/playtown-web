@@ -1,19 +1,21 @@
 # PlayTown — Your game. Your people.
 
-The customer-facing product website for PlayTown, a community-driven sports technology platform developed by NISIMIN. The owner confirmed `https://nisimin.com` as its canonical origin. This checkout is a PlayTown experience, with no other product catalogue.
+The customer-facing product website for PlayTown, a community-driven sports technology platform developed by NISIMIN. The production canonical origin is `https://playtown.nisimin.com`. This checkout is a PlayTown experience, with no other product catalogue.
 
 ## Run and verify
 
 ```sh
-npm install
-npm run dev
-npm run lint
-npm run build -- --webpack
+npm ci
 npm run typecheck
+npm run build
+npm run verify:export
 npm test
+npm start
 ```
 
-`npm run build` uses Turbopack. In this restricted environment its process ports are blocked, including an attempted elevated build; the supported Webpack build succeeds. Run TypeScript after the build because Next generates route types during the build. Browser tests use the production server at port 3100 and installed Google Chrome on macOS. Install Playwright Chromium on other hosts.
+`npm run build` uses Webpack and Next's static export to produce `out/`. Cache Components are disabled and local images are exported without a runtime optimizer. `npm start` serves that output and the inquiry Pages Function through Wrangler. Browser tests use Wrangler on port 3100 and installed Google Chrome on macOS; install Playwright Chromium on other hosts. `npm run dev` previews Next UI only, without the Pages Function or redirect rules.
+
+See [Cloudflare Pages deployment](docs/cloudflare-pages.md) for build settings, required runtime bindings, preview indexing, the custom domain and local verification. No deployment or DNS changes have been performed.
 
 ## Product narrative and content
 
@@ -21,16 +23,16 @@ The homepage moves through community-sport challenges, the PlayTown solution, im
 
 Athlete identities/discovery, Sports Passport, tournament discovery/management, fixtures, volleyball scoring, eligible award/result rankings and text-based social engagement are covered. Dedicated club profiles/rankings, durable cross-event team profiles and broader scoring engines are explicitly future direction. Photo posting remains pending end-to-end release verification. No traction, testimonials, customers or partnerships are invented.
 
-Original sports routes remain functional: `/about/`, `/what-we-do/`, `/our-vision/`, `/partners/`, `/sports/`, `/for-athletes/`, `/for-organizers/`, `/contact/`, and `/platform/`. The temporarily introduced `/products/` and `/products/playtown/` URLs permanently redirect to `/platform/` and `/`. Privacy/terms aliases also redirect permanently. Unknown paths return 404. No hostname/DNS redirects or deployment were performed.
+Original sports routes remain functional: `/about/`, `/what-we-do/`, `/our-vision/`, `/partners/`, `/sports/`, `/for-athletes/`, `/for-organizers/`, `/contact/`, and `/platform/`. The temporarily introduced `/products/` and `/products/playtown/` URLs permanently redirect to `/platform/` and `/` through Cloudflare Pages `_redirects`. Privacy/terms aliases also redirect permanently. Unknown paths return 404. No hostname/DNS redirects or deployment were performed.
 
 ## Configuration
 
 Copy `.env.example` to `.env.local` only when changing deployment settings. Never commit credentials.
 
-- `NEXT_PUBLIC_SITE_URL` defaults to the confirmed `https://nisimin.com`. Use the exact HTTPS origin, without paths. Explicitly empty/invalid values produce a noindex preview and empty sitemap; Vercel previews also remain noindex. Production metadata, canonicals, sitemap and schema use the same origin.
+- `NEXT_PUBLIC_SITE_URL` defaults to `https://playtown.nisimin.com`. Use the exact HTTPS origin, without paths. Explicitly empty/invalid values produce a noindex preview and empty sitemap; `NEXT_PUBLIC_NOINDEX=true` disables indexing for Cloudflare Preview builds; Vercel previews also remain noindex. Production metadata, canonicals, sitemap and schema use the same origin.
 - `NEXT_PUBLIC_CONTACT_EMAIL` defaults to the published `hello@nisimin.com`. Optional official Instagram/LinkedIn URLs are validated before being shown.
 - `NEXT_PUBLIC_PLAYTOWN_ANDROID_URL` and `NEXT_PUBLIC_PLAYTOWN_IOS_URL` accept real HTTPS Google Play/app details and Apple App Store listing URLs. Empty or invalid values show availability text, without fake download buttons.
-- `INQUIRY_WEBHOOK_URL` and optional `INQUIRY_WEBHOOK_TOKEN` enable the existing server-side enquiry adapter. The form is displayed only when the receiver is configured. Email enquiries work immediately without it. Rebuild after changing configuration.
+- `NEXT_PUBLIC_INQUIRIES_ENABLED=true` renders the sending form at build time. Configure `INQUIRY_WEBHOOK_URL` and optional `INQUIRY_WEBHOOK_TOKEN` as Cloudflare Pages Function runtime secrets for delivery. They are never read by the Next build. Email enquiries work without them. Rebuild after changing public configuration; see `.dev.vars.example` for local runtime settings.
 
 The receiver accepts POST JSON with `name`, `email`, `organization`, `interest`, `message`, `consent: true` and the retained `source: "playtown-company-website"`. The source identifier is preserved for receiver compatibility. Optional authorization is `Bearer <token>`. Confirm actual storage/delivery before launch. The adapter checks request origin, JSON, bounded body/field lengths, consent, category and honeypot, and only reports success after receiver acceptance. It does not log personal data. Configure hosting-edge/receiver rate limits and retention for production. No newsletter or waitlist is created.
 

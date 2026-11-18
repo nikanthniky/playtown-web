@@ -172,11 +172,11 @@ test("metadata, social preview, schema, sitemap and legacy routes stay coherent"
     titles.add(await page.title());
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      `https://nisimin.com${route}`,
+      `https://playtown.nisimin.com${route}`,
     );
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
-      `https://nisimin.com${route}`,
+      `https://playtown.nisimin.com${route}`,
     );
     await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
       "content",
@@ -210,7 +210,7 @@ test("metadata, social preview, schema, sitemap and legacy routes stay coherent"
   expect(sitemap).not.toContain("/privacy/");
   expect(sitemap).not.toContain("/products/");
   expect(await (await request.get("/robots.txt")).text()).toContain(
-    "Sitemap: https://nisimin.com/sitemap.xml",
+    "Sitemap: https://playtown.nisimin.com/sitemap.xml",
   );
   for (const [from, to] of [
     ["/products/", "/platform/"],
@@ -219,7 +219,7 @@ test("metadata, social preview, schema, sitemap and legacy routes stay coherent"
     ["/terms-and-conditions/", "/terms/"],
   ]) {
     const response = await request.get(from, { maxRedirects: 0 });
-    expect(response.status()).toBe(308);
+    expect(response.status()).toBe(301);
     expect(
       new URL(response.headers().location, "http://localhost").pathname,
     ).toBe(to);

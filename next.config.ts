@@ -1,33 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
   trailingSlash: true,
-  async redirects() {
-    return [
-      { source: "/products", destination: "/platform/", permanent: true },
-      { source: "/products/playtown", destination: "/", permanent: true },
-      { source: "/playtown", destination: "/", permanent: true },
-      { source: "/privacy-policy", destination: "/privacy/", permanent: true },
-      {
-        source: "/terms-and-conditions",
-        destination: "/terms/",
-        permanent: true,
-      },
-    ];
-  },
-  experimental: {
-    agentFeedback: true,
-  },
-  cacheComponents: true,
-  partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
+  // Pages serves the original local assets; there is no Next image server.
+  images: { unoptimized: true },
+  // Cache Components and partial prefetching require a Next server.
+  cacheComponents: false,
 };
 
 export default nextConfig;

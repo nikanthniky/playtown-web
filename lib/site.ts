@@ -15,10 +15,12 @@ function publicOrigin(value: string | undefined) {
   }
 }
 export const productionOrigin = publicOrigin(
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://nisimin.com",
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://playtown.nisimin.com",
 );
 export const indexable =
-  Boolean(productionOrigin) && process.env.VERCEL_ENV !== "preview";
+  Boolean(productionOrigin) &&
+  process.env.NEXT_PUBLIC_NOINDEX !== "true" &&
+  process.env.VERCEL_ENV !== "preview";
 export const site = {
   name: "PlayTown",
   url: productionOrigin || "http://localhost:3000",
@@ -100,9 +102,7 @@ export const contact = {
     "instagram.com",
     "www.instagram.com",
   ]),
-  inquiriesEnabled: Boolean(
-    process.env.INQUIRY_WEBHOOK_URL?.startsWith("https://"),
-  ),
+  inquiriesEnabled: process.env.NEXT_PUBLIC_INQUIRIES_ENABLED === "true",
 };
 export const navigation = [
   { label: "Our story", href: "/#why-playtown", section: "why-playtown" },

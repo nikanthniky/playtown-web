@@ -1,5 +1,11 @@
-import { validateInquiry } from "@/lib/inquiry";
-export async function POST(request: Request) {
+import { validateInquiry } from "../../lib/inquiry";
+export interface InquiryEnvironment {
+  INQUIRY_WEBHOOK_URL?: string;
+  INQUIRY_WEBHOOK_TOKEN?: string;
+}
+
+// Web-standard handler: runtime bindings never enter the static Next build.
+export async function handleInquiry(request: Request, env: InquiryEnvironment) {
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin)
     return Response.json(
@@ -61,7 +67,7 @@ export async function POST(request: Request) {
       { error: "This inquiry could not be accepted." },
       { status: 400 },
     );
-  const endpoint = process.env.INQUIRY_WEBHOOK_URL;
+  const endpoint = env.INQUIRY_WEBHOOK_URL;
   if (!endpoint?.startsWith("https://"))
     return Response.json(
       {
@@ -74,8 +80,8 @@ export async function POST(request: Request) {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
-    if (process.env.INQUIRY_WEBHOOK_TOKEN)
-      headers.Authorization = `Bearer ${process.env.INQUIRY_WEBHOOK_TOKEN}`;
+    if (env.INQUIRY_WEBHOOK_TOKEN)
+      headers.Authorization = `Bearer ${env.INQUIRY_WEBHOOK_TOKEN}`;
     const { website: ignored, ...inquiry } = result.data;
     void ignored;
     const response = await fetch(endpoint, {
@@ -103,4 +109,22 @@ export async function POST(request: Request) {
       { status: 502 },
     );
   }
+}
+
+export async function onRequest(context: {
+  request: Request;
+  env: InquiryEnvironment;
+}): Promise<Response> {
+  if (context.request.method !== "POST") {
+    return Response.json(
+      { error: "Method not allowed." },
+      {
+        status: 405,
+        headers: { Allow: "POST" },
+      },
+    );
+  }
+  const response = await handleInquiry(context.request, context.env);
+  response.headers.set("Cache-Control", "no-store");
+  return response;
 }

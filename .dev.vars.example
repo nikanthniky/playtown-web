@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local `npm start` only; never commit credentials.
+# Set these as runtime secrets in Cloudflare Pages for production.
+INQUIRY_WEBHOOK_URL=
+INQUIRY_WEBHOOK_TOKEN=

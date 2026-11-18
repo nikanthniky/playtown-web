@@ -1,0 +1,11 @@
+# Legacy URLs: handled by Pages before serving static assets.
+/products /platform/ 301
+/products/ /platform/ 301
+/products/playtown / 301
+/products/playtown/ / 301
+/playtown / 301
+/playtown/ / 301
+/privacy-policy /privacy/ 301
+/privacy-policy/ /privacy/ 301
+/terms-and-conditions /terms/ 301
+/terms-and-conditions/ /terms/ 301

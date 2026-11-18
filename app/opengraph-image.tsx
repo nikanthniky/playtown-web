@@ -1,3 +1,4 @@
+export const dynamic = "force-static";
 import { ImageResponse } from "next/og";
 export const alt =
   "PlayTown — Your game. Your people. Your community. Developed by NISIMIN.";
